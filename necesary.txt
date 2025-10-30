@@ -1,0 +1,2 @@
+strip removes all starting and endign spaces so that only bits are read!1
+when a python file runs then vo boot hote time hi ek variable banata hai name! name==main means jab file run ho directly toh main() function call ho jaye!
