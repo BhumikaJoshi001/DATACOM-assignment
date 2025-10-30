@@ -1,6 +1,18 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+def longest_palindrome(bits):
+    longest=""
+    for i in range (len(bits)):
+        for j in range (len(bits)+1):
+            part=bits[i:j]
+            if part==part[::-1]:#(-1 means reverse direction so start from end go till start and step=-1, this reverses the string )
+                if len(part)>len(longest):
+                    longest=part
+    return longest
+
+
 # Function to plot signal: time along x-axis and amplitude along y-axis.
 def plot_signal(time,signal,title="LINE ENCODING SCHEME"):
     plt.figure(figsize=(10,4))
@@ -171,6 +183,9 @@ def PCM():
 
     bitstream = ''.join(binary_codes)
     print("\nFinal Bitstream:", bitstream)
+    pal=longest_palindrome(bitstream)
+    print(f"\nLongest Palindrome in Bitstream: {pal}")
+
     
     # The bitstream obtained is fed into any one of the digital line encoding schemes.
     print("\nAvailable Digital Encodings:")
@@ -237,6 +252,9 @@ def Delta_Modulation():
 
     print("\nInput Samples: ",samples)
     print("Delta Modulation Bitstream: ",bitstream_str)
+    pal=longest_palindrome(bitstream_str)
+    print(f"\nLongest Palindrome in Bitstream: {pal}")
+
 
 
     # The bitstream obtained is fed into any one of the digital line encoding schemes.
@@ -291,6 +309,8 @@ def main():
 
     if signal_type == "digital":
         data = input("Enter Binary Data (e.g. 10101110): ").strip()
+        pal=longest_palindrome(data)
+        print(f"\nLongest Palindrome in Bitstream: {pal}")
         print("\nAvailable Digital Encodings:")
         print("1: NRZ-L")
         print("2: NRZ-I")
