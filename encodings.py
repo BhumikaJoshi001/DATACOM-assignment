@@ -1,9 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+# Function to plot signal: time along x-axis and amplitude along y-axis.
 def plot_signal(time,signal,title="LINE ENCODING SCHEME"):
     plt.figure(figsize=(10,4))
-    plt.axhline(0,color="black",linewidth=1.5)#axhline?== axis horizontal line!
+    plt.axhline(0,color="black",linewidth=1.5)
 
     plt.step(time,signal,where="post",linewidth=2)
     plt.title(title)
@@ -13,11 +14,13 @@ def plot_signal(time,signal,title="LINE ENCODING SCHEME"):
     plt.grid(True)
     plt.show()
 
+# Digital to Digital encoding schemes:
+# 1. NRZ-L
 def NRZ_L(bits):
     signal=[]
     time=[]
     prev=0
-    for bit in bits:
+    for bit in bits:    # Unique levels assigned to 0 and 1 bit.
         if bit=="1":
             level=1
         else:
@@ -29,15 +32,16 @@ def NRZ_L(bits):
 
     return time,signal
 
+# 2. NRZ-I
 def NRZ_I(bits):
     signal=[]       
     time=[]        
     prev=0            
-    last_level = -1    #(taki ab phla 1 +positive logic ke accoridng +1 ho jaye (-1)*(-1)==1)
+    last_level = -1    # Ensuring that Positive logic will be followed for the first time (-1 * -1 = 1).
 
     for bit in bits:
         if bit=='1' or bit==1:    
-            last_level=last_level*(-1)       
+            last_level=last_level*(-1)    # Inverting Amplitude if bit = 1. 
         time.extend([prev,prev+1])
         signal.extend([last_level,last_level])
 
@@ -45,23 +49,25 @@ def NRZ_I(bits):
 
     return time,signal
 
+# 3. Manchester
 def Manchester(bits):
     signal=[]
     time=[]
     prev=0
     for bit in bits:
-        if bit=="1":
+        if bit=="1":    # Unique levels assigned to 0 and 1 bit, but transition in the middle.
             first_half=1
             second_half=-1
         else:
             first_half=-1
             second_half=1
-        signal.extend([first_half,second_half,second_half])
-        time.extend([prev,prev+0.5,prev+1])#(2 baar second half dene se end tak vahi rhega jese start aur end point dete the bakiyon mein!)
+        signal.extend([first_half,second_half,second_half])   # Signal levels for start, mid-bit transition till the next bit.
+        time.extend([prev,prev+0.5,prev+1])   # Time at the start, middle and end of the bit.
         prev=prev+1
-    return time, signal  
+    return time, signal
 
-def Differential_Manchester(bits):#1 pe same jesa chl rha hai but 0 pe transition!
+# 4. Differential_Manchester
+def Differential_Manchester(bits):
    signal=[]
    time=[]
    last_level=1
@@ -69,40 +75,42 @@ def Differential_Manchester(bits):#1 pe same jesa chl rha hai but 0 pe transitio
    for bit in bits:
        
         if bit=="0":
-            last_level=last_level*-1
+            last_level=last_level*-1   # Inverting Amplitude if bit = 0, else starting where the last signal ended.
 
         first_half=last_level
         second_half=-last_level  
 
-        signal.extend([first_half,second_half,second_half])
-        time.extend([prev,prev+0.5,prev+1])
+        signal.extend([first_half,second_half,second_half])   # Signal levels for start, mid-bit transition till the next bit.
+        time.extend([prev,prev+0.5,prev+1])   # Time at the start, middle and end of the bit.
         
         prev=prev+1
-        last_level =second_half#(so that next time same place start (same rahe then we will change it if bit ==0))
+        last_level =second_half    # Ensuring the new bit starts at the amplitude where the last one ended.
    return time,signal 
 
-
+# 5. AMI
 def AMI(bits):
     signal=[]
     time=[]
-    last_polarity=-1#because -1*-1 one ho for the first one jo milega
+    last_polarity=-1   # Ensuring that Positive logic will be followed for the first time (-1 * -1 = 1).
     prev=0
     for bit in bits:
-        if bit=="1" or bit=="B":
+        if bit=="1" or bit=="B":   # Follows AMI rule in case of B or 1, i.e. alternating amplitude 
             last_polarity=last_polarity*(-1)
             level=last_polarity
-        elif(bit=="V"):
+
+        elif(bit=="V"):   # Violating AMI rule in case of V.
             level=last_polarity
             
-        else:#(bit agar B nahi hai 1 nahi hai V nahi hai means 0 toh 0 pe toh 0 pe rhta hai !)
+        else:   # Amplitude 0 if bit = 0.
             level=0
         signal.extend([level,level])
         time.extend([prev,prev+1])
         prev=prev+1
     return time,signal
 
+# Scrambing methods for AMI in case of long string of 0s.
 def HDB3(bits):
-    bits=list(bits)#list mein issilie convert kia takki loop aur slicing vgrh kr paye asani se 
+    bits=list(bits) 
     no_of_Ones=0
     i=0
     while i<len(bits):
@@ -117,19 +125,13 @@ def HDB3(bits):
                 bits[i+1]="0"
                 bits[i+2]="0"
                 bits[i+3]="V"
-            no_of_Ones=0 #(no of ones ko ferse reset )
+            no_of_Ones=0
             i=i+4
         else:
             if bits[i]=="1":
                 no_of_Ones=no_of_Ones+1
             i=i+1
     return bits
-
-
-
-#jo bitstream mili hai hum usmein hi changes kr rhe hai issilie 0 milega toh kuch nahi kia kyuki agr 4 se kam zero hai toh hum usse aise hi rhnedenge bitsream mein
-#hdb3 vala fucntion kewal scrambled input bitstream de rha hai uske baaad vo scrambled bitstream ko mai ami mein paas kr rhi ho so that it generates a plot!
-
 
 def B8ZS(bits):
     bits=list(bits)
@@ -141,14 +143,15 @@ def B8ZS(bits):
         else:
             i=i+1
     return bits
-#(baki 1 aur 0 ko as it is rhendo vo ami plot krlega (kyuki main function mien hum last mein hdb3 aur b8zs ki plotting ami se hi kra rhe hai !)but for long chain of 8 zeroes hum isko scramble kr rhe hai !)
 
-
-
+# Analog to Digital encoding schemes:
+# 1. PCM
 def PCM():
+
+    # User will provide sampled amplitudes.
     samples=list(map(float, input("Enter sampled analog values (comma-separated): ").split(',')))
 
-    levels=list(range(-3,5))  
+    levels=list(range(-3,5))  # For Quantization, 8 levels are created.
 
     if any(x<-3 or x>4 for x in samples):
         print("\n Error: Range not defined! Please enter values between -3 and +4 only.")
@@ -157,7 +160,7 @@ def PCM():
     level_to_code = {level: i for i, level in enumerate(levels)}
 
     print("\nQuantization Levels and Codes:")
-    for level, code in level_to_code.items():
+    for level, code in level_to_code.items():   # Assigning Quantization levels to amplitude, and generating the 3 bit binary code for that level.
         print(f"{level:>2} → {code:03b}")
 
     quantized=[min(levels,key=lambda L: abs(L - x)) for x in samples]
@@ -168,7 +171,8 @@ def PCM():
 
     bitstream = ''.join(binary_codes)
     print("\nFinal Bitstream:", bitstream)
-
+    
+    # The bitstream obtained is fed into any one of the digital line encoding schemes.
     print("\nAvailable Digital Encodings:")
     print("1: NRZ-L")
     print("2: NRZ-I")
@@ -211,8 +215,10 @@ def PCM():
     else:
             print("Invalid choice.")
 
+# 2. DM
 def Delta_Modulation():
     
+    # User will provide sampled amplitudes.
     samples =list(map(float,input("Enter sampled (quantized) values (comma-separated): ").split(',')))
 
     if len(samples)<2:
@@ -221,7 +227,7 @@ def Delta_Modulation():
 
     bitstream=[]
 
-    for i in range(1,len(samples)):
+    for i in range(1,len(samples)):    # If the amplitude is greater than previous amplitude, bit = 1. else 0.
         if samples[i]>samples[i-1]:
             bitstream.append('1')  
         else:
@@ -233,7 +239,7 @@ def Delta_Modulation():
     print("Delta Modulation Bitstream: ",bitstream_str)
 
 
-    #####PLOTTTING USINGGGG ANYY TYPE OF DIGITAL ENCODINGGG !!! SCRAMBLING DONEE!! YEAHHHHHHHH!
+    # The bitstream obtained is fed into any one of the digital line encoding schemes.
     print("\nAvailable Digital Encodings:")
     print("1: NRZ-L")
     print("2: NRZ-I")
@@ -277,14 +283,9 @@ def Delta_Modulation():
             print("Invalid choice.")
     
 
-
-
-    
-
+### The main function to drive the encoder. ###
 def main():
     print(" LINE ENCODING VISUALIZER ")
-
-    
 
     signal_type = input("Enter type (DIGITAL / ANALOG): ").strip().lower()
 
@@ -348,11 +349,6 @@ def main():
     
     else:
         print("Invalid input type. Please enter DIGITAL or ANALOG.")
-
-
-
-
-
 
 
     
