@@ -87,4 +87,4 @@ This project serves as a simple yet powerful visualization tool for understandin
 
 ## Author
 
-Developed by **Bhumika Joshi** and **Neharika Bajaj**  
+Developed by **Bhumika Joshi** and **Shristi Muskan**  
