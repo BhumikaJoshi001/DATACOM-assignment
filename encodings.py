@@ -169,6 +169,48 @@ def PCM():
     bitstream = ''.join(binary_codes)
     print("\nFinal Bitstream:", bitstream)
 
+    print("\nAvailable Digital Encodings:")
+    print("1: NRZ-L")
+    print("2: NRZ-I")
+    print("3: Manchester")
+    print("4: Differential Manchester")
+    print("5: AMI")
+
+    choice = input("Enter your choice (1-5): ").strip()
+    if choice=="1":
+        t,s=NRZ_L(bitstream)
+        plot_signal(t,s,"NRZ-L encoding")
+    elif choice=="2":
+        t,s=NRZ_I(bitstream)
+        plot_signal(t,s,"NRZ-I encoding")
+    elif choice=="3":
+        t,s=Manchester(bitstream)
+        plot_signal(t,s,"Manchester encoding")
+    elif choice=="4":
+        t,s=Differential_Manchester(bitstream)
+        plot_signal(t,s,"Differential_Manchester encoding")
+    elif choice=="5":
+        t,s=AMI(bitstream)
+        scramble=input("Apply Scrambling?? (yes/no) ").strip().lower()
+        if scramble=="yes":
+            scrambling_type=input("Choose type : (B8ZS/HDB3): ").strip().upper()
+            if scrambling_type == "B8ZS":
+                scrambled_data = B8ZS(bitstream)
+            elif scrambling_type == "HDB3":
+                scrambled_data = HDB3(bitstream)
+            else:
+                print("INVALID SCRAMBLING TECHNIQUE")
+                return
+
+            t, s = AMI(scrambled_data)
+            plot_signal(t, s, f"AMI with {scrambling_type} Scrambling")
+
+               
+        else:
+            plot_signal(t,s,"ami encoding")
+    else:
+            print("Invalid choice.")
+
 def Delta_Modulation():
     
     samples =list(map(float,input("Enter sampled (quantized) values (comma-separated): ").split(',')))
