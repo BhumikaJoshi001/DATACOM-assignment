@@ -36,7 +36,7 @@ Make sure you have **Python 3.x** installed.
 Install dependencies:
 ```bash
 git clone https://github.com/BhumikaJoshi001/DATACOM-assignment.git
-cd Line-Encoding-Visualizer
+cd DATACOM-assignment
 pip install -r requirements.txt
 ```
 Run the visualizer:
