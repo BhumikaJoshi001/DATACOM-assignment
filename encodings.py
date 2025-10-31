@@ -1,13 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 def longest_palindrome(bits):
     longest=""
     for i in range (len(bits)):
         for j in range (len(bits)+1):
             part=bits[i:j]
-            if part==part[::-1]:#(-1 means reverse direction so start from end go till start and step=-1, this reverses the string )
+            if part==part[::-1]: # (-1 means reverse direction so start from end go till start and step=-1, this reverses the string )
                 if len(part)>len(longest):
                     longest=part
     return longest
@@ -391,9 +390,7 @@ def main():
             Delta_Modulation(samples)
         else:
             print("Invalid choice.")
-
-
-    
+  
     else:
         print("Invalid input type. Please enter DIGITAL or ANALOG.")
 
